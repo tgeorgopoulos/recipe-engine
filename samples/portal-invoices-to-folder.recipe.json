@@ -1,0 +1,74 @@
+{
+  "format": "recipe-engine/1",
+  "exported": "2026-09-20T00:00:00+00:00",
+  "key_id": "sample",
+  "engine_version": "0.1.0",
+  "recipe": {
+    "name": "portal-invoices-to-folder",
+    "description": "Download this month's invoices from the vendor portal",
+    "surface": "browser",
+    "steps": [
+      {
+        "surface": "browser",
+        "action": "goto",
+        "selector": null,
+        "value": "https://portal.examplevendor.com/billing",
+        "expect": "role=link[name='Invoices']",
+        "timeout_ms": 10000
+      },
+      {
+        "surface": "browser",
+        "action": "click",
+        "selector": "role=link[name='Invoices']",
+        "value": null,
+        "expect": "label=Month",
+        "timeout_ms": 10000
+      },
+      {
+        "surface": "browser",
+        "action": "select",
+        "selector": "label=Month",
+        "value": "{{month}}",
+        "expect": "role=button[name='Download all']",
+        "timeout_ms": 10000
+      },
+      {
+        "surface": "browser",
+        "action": "download",
+        "selector": "role=button[name='Download all']",
+        "value": null,
+        "expect": "url=https://portal.examplevendor.com/billing",
+        "timeout_ms": 10000
+      },
+      {
+        "surface": "browser",
+        "action": "read",
+        "selector": "role=table",
+        "value": null,
+        "expect": "url=https://portal.examplevendor.com/billing",
+        "timeout_ms": 10000
+      }
+    ],
+    "params": [
+      {
+        "name": "month",
+        "example": "2026-09",
+        "used_in": [
+          3
+        ]
+      }
+    ],
+    "app_hints": [
+      "Chrome"
+    ],
+    "display": null,
+    "background_capable": false,
+    "schema": 2,
+    "command_normalized": "download this month's invoices from the vendor portal",
+    "command_variants": [],
+    "preconditions": {
+      "requires_login": true
+    }
+  },
+  "signature": ""
+}

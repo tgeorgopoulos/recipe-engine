@@ -1,0 +1,28 @@
+{
+  "name": "recipe-engine",
+  "displayName": "Recipe Engine",
+  "version": "0.1.0",
+  "description": "Deterministic, verified, zero-token replay of desktop and browser workflows Claude has already done once (Windows host over loopback MCP).",
+  "author": {
+    "name": "Recipe Engine",
+    "url": "https://github.com/tgeorgopoulos/recipe-engine"
+  },
+  "homepage": "https://github.com/tgeorgopoulos/recipe-engine",
+  "repository": "https://github.com/tgeorgopoulos/recipe-engine",
+  "license": "MIT",
+  "keywords": ["automation", "replay", "desktop", "browser", "windows", "cowork"],
+  "hooks": "./hooks/hooks.json",
+  "mcpServers": "./.mcp.json",
+  "userConfig": {
+    "token": {
+      "type": "string",
+      "title": "Engine token",
+      "description": "Contents of %LOCALAPPDATA%\\RecipeEngine\\token on the Windows PC that runs the host (printed by `recipe-engine token`)."
+    },
+    "url": {
+      "type": "string",
+      "title": "Engine URL",
+      "description": "http://127.0.0.1:47391/mcp on the host itself. If Cowork's sandbox cannot reach the host's loopback, start the host with --bind <adapter IP> and put that URL here (the token is still required)."
+    }
+  }
+}

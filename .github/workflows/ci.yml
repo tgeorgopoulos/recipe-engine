@@ -1,0 +1,90 @@
+name: ci
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  unit:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -e ".[bg,dev]"
+      - name: invariants self-test (a separate gate from pytest)
+        run: python -m recipe_engine.invariants --self-test
+      - name: unit
+        run: python -m pytest -q
+      - name: zero-LLM assertion
+        run: python -m pytest -q tests/test_zero_llm.py
+
+  browser:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -e ".[bg,dev]"
+      - run: python -m playwright install chromium
+      - name: slow (real Chrome on a temp profile)
+        run: python -m pytest -q -m slow
+
+  integration:
+    # Drives the real desktop: Notepad/WinForms record -> replay, Esc abort, background replay,
+    # the 50x reliability run. `recipe-engine check` fails LOUDLY if the runner's session stops
+    # being interactive - a silent skip would hide a broken safety property.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -e ".[bg,dev]"
+      - name: interactive-session gate
+        run: python -m recipe_engine check
+      - name: integration
+        run: python -m pytest -q -m integration
+      - name: 50x record -> replay reliability (>= 95%, median < 10 s)
+        run: python tests/reliability_study.py --runs 50 --report reports/reliability.md
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reliability-report
+          path: reports/
+
+  packaging:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: python -m pip install -e ".[bg,dev]"
+      - run: npm i -g @anthropic-ai/mcpb @anthropic-ai/claude-code
+      - name: host bundle (PyInstaller) + zip + sha256
+        run: powershell -ExecutionPolicy Bypass -File scripts/package.ps1
+      - name: extension (.mcpb)
+        run: powershell -ExecutionPolicy Bypass -File mcpb/build.ps1
+      - name: plugin validate --strict
+        run: claude plugin validate . --strict
+      - name: packaging tests (manifest, plugin, shim)
+        run: python -m pytest -q -m packaging tests/test_packaging.py tests/test_shim.py
+      - name: smoke the frozen host
+        run: |
+          dist\recipe-engine\recipe-engine.exe --version
+          dist\recipe-engine\recipe-engine.exe selftest
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bundles
+          path: |
+            dist/recipe-engine-win64.zip
+            dist/recipe-engine-win64.zip.sha256
+            dist/recipe-engine.mcpb
+            dist/recipe-engine.mcpb.sha256

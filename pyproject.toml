@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "recipe-engine"
+version = "0.1.0"
+description = "Deterministic, verified, zero-token replay of desktop and browser workflows Claude has already done once - exposed to Claude Desktop, Claude Code and Cowork over MCP."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+    "mcp>=2.2,<3",
+    "uvicorn>=0.30",
+    "starlette>=0.40",
+    "pyautogui>=0.9.54",
+    "pillow>=10",
+    "playwright>=1.62",
+    "pywin32>=306; sys_platform == 'win32'",
+    "uiautomation==2.0.29; sys_platform == 'win32'",
+    "pystray>=0.19",
+]
+
+[project.optional-dependencies]
+bg = ["pyvda>=0.6"]
+dev = ["pytest>=8", "pyinstaller>=6"]
+
+[project.scripts]
+recipe-engine = "recipe_engine.cli:main"
+
+[tool.setuptools]
+packages = ["recipe_engine"]
+include-package-data = true
+
+[tool.setuptools.package-data]
+recipe_engine = ["static/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+# The default run is unit-only: slow (real Chrome) and integration (drives the real desktop)
+# must be asked for with -m slow / -m integration so a plain `pytest` never fights the user's screen.
+addopts = "-m 'not slow and not integration and not packaging'"
+markers = [
+    "slow: launches real Chrome on a temp profile (a few seconds each)",
+    "integration: drives the real desktop (Notepad/Explorer); needs an unlocked interactive session",
+    "packaging: builds the exe / bundle; only in CI",
+]

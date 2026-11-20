@@ -1,0 +1,25 @@
+# Recipe Engine runtime. `pip install -e .` reads pyproject.toml; this file mirrors it
+# for people who prefer requirements files. No model SDK, no API key, no audio stack:
+# the engine never calls a language model (see recipe_engine/invariants.py).
+
+# MCP host (stdio + streamable HTTP on loopback)
+mcp>=2.2,<3
+uvicorn>=0.30
+starlette>=0.40
+
+# Desktop surface
+pyautogui>=0.9.54
+pillow>=10
+pywin32>=306; sys_platform == "win32"
+uiautomation==2.0.29; sys_platform == "win32"
+pystray>=0.19
+
+# Browser surface: pip install playwright && playwright install chromium; uses the real Chrome channel
+playwright>=1.62
+
+# Optional: background replay on a virtual desktop (build-gated; the engine works without it)
+# pyvda>=0.6
+
+# Development
+pytest>=8
+pyinstaller>=6

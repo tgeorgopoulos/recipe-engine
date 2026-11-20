@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RECIPE ENGINE // PANEL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#04060c; --bg2:#080d18; --panel:rgba(9,15,28,.78); --line:rgba(25,230,255,.16); --line2:rgba(25,230,255,.38);
+  --cy:#19e6ff; --cy2:#7df9ff; --mg:#ff2bd6; --am:#ffb020; --gn:#37ff8b; --rd:#ff3b5c; --vi:#9d7bff;
+  --tx:#d5ecf7; --dim:#6a8aa0; --dim2:#3c5468;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --disp:"Orbitron","JetBrains Mono",ui-monospace,monospace; --r:10px;
+}
+*{box-sizing:border-box} html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--tx);font:13px/1.45 var(--mono);overflow:hidden;
+  background-image:radial-gradient(1200px 600px at 20% -10%, rgba(25,230,255,.10), transparent 60%),
+    radial-gradient(900px 500px at 110% 110%, rgba(255,43,214,.10), transparent 60%),
+    linear-gradient(rgba(25,230,255,.045) 1px, transparent 1px),linear-gradient(90deg, rgba(25,230,255,.045) 1px, transparent 1px);
+  background-size:auto,auto,44px 44px,44px 44px;}
+body::after{content:"";pointer-events:none;position:fixed;inset:0;z-index:50;background:repeating-linear-gradient(0deg, rgba(0,0,0,.14) 0 1px, transparent 1px 3px);mix-blend-mode:multiply;opacity:.55}
+a{color:var(--cy)}
+button{font:inherit;color:inherit;background:transparent;border:1px solid var(--line2);border-radius:6px;padding:6px 10px;cursor:pointer;letter-spacing:.06em;text-transform:uppercase;font-size:11px;transition:all .12s ease}
+button:hover{border-color:var(--cy);box-shadow:0 0 12px rgba(25,230,255,.25);color:var(--cy2)}
+button:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
+button.go{border-color:rgba(55,255,139,.6);color:var(--gn)} button.go:hover{box-shadow:0 0 14px rgba(55,255,139,.35)}
+button.stop{border-color:rgba(255,59,92,.6);color:var(--rd)} button.stop:hover{box-shadow:0 0 14px rgba(255,59,92,.35)}
+button.on{background:rgba(25,230,255,.14);border-color:var(--cy);color:#fff;text-shadow:0 0 8px var(--cy)}
+input[type=text]{font:inherit;color:var(--tx);background:rgba(0,0,0,.35);border:1px solid var(--line2);border-radius:6px;padding:9px 12px;outline:none;width:100%}
+input[type=text]:focus{border-color:var(--cy);box-shadow:0 0 0 2px rgba(25,230,255,.12),0 0 18px rgba(25,230,255,.18)}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:rgba(25,230,255,.25);border-radius:8px}
+#app{display:grid;height:100vh;gap:10px;padding:10px;grid-template-columns:300px minmax(380px,1fr) 330px;grid-template-rows:64px minmax(0,1fr) 220px;grid-template-areas:"hdr hdr hdr" "left mid right" "con con con";}
+header{grid-area:hdr}.left{grid-area:left}.mid{grid-area:mid}.right{grid-area:right}.con{grid-area:con}
+.col{display:flex;flex-direction:column;gap:10px;min-height:0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);backdrop-filter:blur(8px);position:relative;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.panel::before{content:"";position:absolute;inset:0 0 auto 0;height:1px;background:linear-gradient(90deg,transparent,var(--cy),transparent);opacity:.5}
+.panel h2{margin:0;padding:8px 12px;font:600 10px/1 var(--mono);letter-spacing:.22em;color:var(--dim);text-transform:uppercase;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+.panel h2 .n{margin-left:auto;color:var(--cy);font-weight:400;letter-spacing:.05em}
+.body{padding:10px 12px;overflow:auto;min-height:0;flex:1}.grow{flex:1 1 auto}.fixed{flex:0 0 auto}
+@media (max-width:1180px){#app{grid-template-columns:1fr 1fr;grid-template-rows:64px auto auto 220px;grid-template-areas:"hdr hdr" "left mid" "right right" "con con";overflow:auto}body{overflow:auto}}
+@media (max-width:760px){#app{grid-template-columns:1fr;grid-template-areas:"hdr" "mid" "left" "right" "con"}}
+header{display:flex;align-items:center;gap:18px;padding:0 16px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+.logo{font:900 18px/1 var(--disp);letter-spacing:.18em;color:#fff;text-shadow:0 0 14px rgba(25,230,255,.7)}
+.logo small{display:block;font:500 9px/1 var(--mono);letter-spacing:.3em;color:var(--dim);margin-top:5px}
+.badge{font:700 13px/1 var(--disp);letter-spacing:.14em;padding:10px 16px;border-radius:8px;border:1px solid var(--line2);background:rgba(25,230,255,.06);color:var(--cy2);text-shadow:0 0 10px rgba(25,230,255,.8);min-width:230px;text-align:center}
+.badge.busy{color:var(--am);border-color:rgba(255,176,32,.6);text-shadow:0 0 12px rgba(255,176,32,.8);background:rgba(255,176,32,.07)}
+.badge.rec{color:var(--mg);border-color:rgba(255,43,214,.6);text-shadow:0 0 12px rgba(255,43,214,.8);animation:pulse 1.2s ease-in-out infinite}
+.badge.bad{color:var(--rd);border-color:rgba(255,59,92,.6);text-shadow:0 0 12px rgba(255,59,92,.8)}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,43,214,.35)}50%{box-shadow:0 0 0 8px rgba(255,43,214,0)}}
+.ind{display:flex;align-items:center;gap:8px;color:var(--dim);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--dim2);transition:all .2s}
+.dot.on{background:var(--gn);box-shadow:0 0 10px var(--gn)}.dot.warn{background:var(--am);box-shadow:0 0 10px var(--am)}.dot.off{background:var(--rd);box-shadow:0 0 8px var(--rd)}
+.spacer{flex:1}.meta{color:var(--dim);font-size:11px;text-align:right;line-height:1.5}.meta b{color:var(--tx);font-weight:600}
+.kv{display:grid;grid-template-columns:1fr auto;gap:3px 12px;font-size:11px;color:var(--dim)}
+.kv b{color:var(--tx);font-weight:600;text-align:right;white-space:nowrap}.kv .ok{color:var(--gn)}.kv .warn{color:var(--am)}.kv .bad{color:var(--rd)}
+.lbl{font-size:10px;letter-spacing:.18em;color:var(--dim);text-transform:uppercase}
+.tag{font-size:9px;letter-spacing:.15em;padding:2px 6px;border-radius:4px;border:1px solid;text-transform:uppercase;white-space:nowrap}
+.tag.browser{color:var(--cy);border-color:rgba(25,230,255,.5)}.tag.desktop{color:var(--vi);border-color:rgba(157,123,255,.6)}
+.tag.warn{color:var(--am);border-color:rgba(255,176,32,.6)}.tag.bad{color:var(--rd);border-color:rgba(255,59,92,.6)}.tag.ok{color:var(--gn);border-color:rgba(55,255,139,.6)}.tag.dim{color:var(--dim);border-color:var(--dim2)}
+.reason{padding:8px 10px;border-radius:6px;border:1px solid rgba(255,176,32,.45);background:rgba(255,176,32,.08);color:#ffd48a;margin-bottom:8px;font-size:12px;white-space:pre-wrap}
+.reason b{display:block;font-size:9px;letter-spacing:.2em;color:var(--am);margin-bottom:3px}
+.reason.ok{border-color:rgba(55,255,139,.45);background:rgba(55,255,139,.07);color:#bfffd9}.reason.ok b{color:var(--gn)}
+.reason.bad{border-color:rgba(255,59,92,.5);background:rgba(255,59,92,.08);color:#ffb3c0}.reason.bad b{color:var(--rd)}
+.cmd{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);align-items:center}.cmd button{padding:9px 12px;white-space:nowrap}
+.hint{font-size:10px;color:var(--dim2);padding:0 12px 8px;letter-spacing:.05em}
+table{width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed}
+th{font-weight:600;color:var(--dim);letter-spacing:.12em;text-align:left;padding:4px 4px;border-bottom:1px solid var(--line);font-size:9px;text-transform:uppercase}
+th:nth-child(2){width:64px}th:nth-child(3){width:46px}th:nth-child(4){width:40px}th:nth-child(5){width:48px}th:nth-child(6){width:120px}
+td{padding:5px 4px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top;overflow:hidden;word-break:break-word}
+td .x{padding:2px 5px;font-size:9px;margin-right:3px}
+.empty{color:var(--dim2);font-size:11px;padding:6px 2px;letter-spacing:.05em}
+.job{padding:6px 8px;border-radius:6px;border:1px solid var(--line);margin-bottom:6px;background:rgba(0,0,0,.2)}.job .n{color:var(--am);font-weight:600}.job .h{color:var(--dim);font-size:11px}
+pre.steps{margin:0;white-space:pre-wrap;font-size:11px;color:#cfe6f5}
+.con .body{padding:6px 10px;font-size:11.5px;line-height:1.5}
+.ln{white-space:pre-wrap;word-break:break-all;color:#a9c4d3}.ln .ts{color:var(--dim2)}.ln .tg{display:inline-block;min-width:88px;font-weight:600;letter-spacing:.06em}
+.tg.RECIPE,.tg.REPLAY,.tg.RECORD{color:var(--gn)}.tg.ENGINE,.tg.INPUT,.tg.TOOL{color:#8fd3ff}.tg.ERROR,.tg.FAIL{color:var(--rd)}.tg.WEB,.tg.SERVICE,.tg.TRAY{color:#fff}.tg.CHECK,.tg.AUTH,.tg.INVARIANTS,.tg.SESSION,.tg.BROWSER{color:var(--dim)}
+.tools{display:flex;gap:8px;align-items:center;margin-left:auto}.tools input{width:180px;padding:4px 8px;font-size:11px}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+#modal .box{width:min(900px,100%);max-height:90vh;display:flex;flex-direction:column}#modal pre{margin:0;padding:12px;overflow:auto;white-space:pre-wrap;font-size:11.5px;color:#cfe6f5}
+#toasts{position:fixed;right:16px;bottom:236px;display:flex;flex-direction:column;gap:6px;z-index:120}
+.toast{padding:8px 12px;border-radius:6px;border:1px solid var(--line2);background:var(--bg2);color:var(--tx);font-size:12px;box-shadow:0 0 16px rgba(25,230,255,.2)}.toast.err{border-color:var(--rd);box-shadow:0 0 16px rgba(255,59,92,.3)}
+#offline{position:fixed;left:50%;top:76px;transform:translateX(-50%);padding:6px 14px;border-radius:6px;border:1px solid var(--rd);background:rgba(255,59,92,.15);color:#ffb3c0;display:none;z-index:90;font-size:11px;letter-spacing:.1em}
+#auth{position:fixed;inset:0;background:rgba(4,6,12,.96);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+#auth .panel{width:min(560px,100%)}#auth .body{display:flex;flex-direction:column;gap:10px}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="logo">RECIPE ENGINE<small>LOCAL PANEL // ZERO-TOKEN REPLAY</small></div>
+    <div id="badge" class="badge">CONNECTING</div>
+    <div class="ind"><span id="invDot" class="dot"></span><span>invariants</span></div>
+    <div class="ind"><span id="ctlDot" class="dot"></span><span>desktop</span></div>
+    <div class="spacer"></div>
+    <div class="meta"><div>v<b id="ver">–</b> · UP <b id="up">–</b></div><div>MCP <b id="bind">–</b></div></div>
+  </header>
+
+  <div class="col left">
+    <section class="panel fixed">
+      <h2>Engine</h2>
+      <div class="body kv" id="engineKv"></div>
+    </section>
+    <section class="panel fixed">
+      <h2>Recording <span class="n" id="recState">idle</span></h2>
+      <div class="body kv" id="recKv"><span class="empty" style="grid-column:1/-1">Call record_recipe from Claude to start.</span></div>
+    </section>
+    <section class="panel grow">
+      <h2>Safety</h2>
+      <div class="body">
+        <div id="invList" class="empty">checking…</div>
+        <div class="lbl" style="margin-top:12px">Never</div>
+        <div class="empty" style="white-space:normal">types a password or code · sends, submits, buys, posts, deletes · runs two things on the desktop at once · calls a language model</div>
+        <div class="lbl" style="margin-top:12px">Data</div>
+        <div id="dataDir" class="empty" style="white-space:normal;word-break:break-all"></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="col mid">
+    <section class="panel grow">
+      <h2>Recipes <span class="n" id="recN">0</span></h2>
+      <div class="body" id="recipes"></div>
+    </section>
+    <section class="panel fixed" style="max-height:44%">
+      <h2>Result <span class="n" id="resName"></span></h2>
+      <div class="body" id="result"><div class="empty">Replay a recipe to see its outcome here.</div></div>
+    </section>
+    <section class="panel fixed">
+      <div class="cmd">
+        <input type="text" id="nameIn" placeholder="recipe name to replay…" autocomplete="off">
+        <button id="btnReplay" class="go">▶ Replay</button>
+        <button id="btnStop" class="stop" title="Stop the running replay at its next step">■ Stop</button>
+      </div>
+      <div class="hint">Esc on the keyboard also aborts a replay. Every request here carries the install token.</div>
+    </section>
+  </div>
+
+  <div class="col right">
+    <section class="panel fixed" style="min-height:120px">
+      <h2>Now</h2>
+      <div class="body" id="now"><div class="empty">idle</div></div>
+    </section>
+    <section class="panel grow">
+      <h2>Scheduled jobs <span class="n" id="jobN">0</span></h2>
+      <div class="body" id="jobs"><div class="empty">no scheduled jobs</div></div>
+    </section>
+  </div>
+
+  <section class="panel con">
+    <h2>Console<div class="tools"><input type="text" id="filter" placeholder="filter (regex)"><button id="autoscroll" class="on">autoscroll</button><button id="clear">clear</button></div></h2>
+    <div class="body" id="console"></div>
+  </section>
+</div>
+
+<div id="offline">LINK LOST — RECONNECTING…</div>
+<div id="modal"><div class="panel box"><h2><span id="modalTitle"></span><span class="n"><button id="modalClose">close</button></span></h2><pre id="modalText"></pre></div></div>
+<div id="toasts"></div>
+<div id="auth"><section class="panel"><h2>Install token required</h2><div class="body">
+  <div class="empty" style="white-space:normal">This panel is behind the same per-install token as the MCP port. Open it from the tray icon (Open panel) or paste the contents of <code>%LOCALAPPDATA%\RecipeEngine\token</code>.</div>
+  <input type="text" id="tokIn" placeholder="token" autocomplete="off"><button id="tokOk" class="go">Unlock</button>
+</div></section></div>
+
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+let snap = null, lastId = 0, es = null, autoscroll = true, filterRx = null, token = "";
+
+// ------------------------------------------------------------- token
+(function bootToken(){
+  const m = location.hash.match(/[#&]t=([^&]+)/);
+  if(m){ token = decodeURIComponent(m[1]); try{ sessionStorage.setItem("re_token", token); }catch{} history.replaceState(null, "", location.pathname); }
+  else { try{ token = sessionStorage.getItem("re_token") || ""; }catch{} }
+  if(!token) $("auth").style.display = "flex";
+})();
+$("tokOk").onclick = () => { token = $("tokIn").value.trim(); if(!token) return; try{ sessionStorage.setItem("re_token", token); }catch{} $("auth").style.display = "none"; boot(); };
+$("tokIn").addEventListener("keydown", e => { if(e.key === "Enter") $("tokOk").click(); });
+
+// ------------------------------------------------------------- helpers
+function esc(s){ return String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function toast(msg, err){ const d = document.createElement("div"); d.className = "toast" + (err ? " err" : ""); d.textContent = msg; $("toasts").appendChild(d); setTimeout(() => d.remove(), 3500); }
+async function api(path, body){
+  try{
+    const opts = {headers: {"Authorization": "Bearer " + token}};
+    if(body !== undefined){ opts.method = "POST"; opts.headers["Content-Type"] = "application/json"; opts.body = JSON.stringify(body); }
+    const r = await fetch(path, opts);
+    if(r.status === 401){ $("auth").style.display = "flex"; return null; }
+    const j = await r.json();
+    if(!r.ok || j.error){ toast(j.error || ("HTTP " + r.status), true); }
+    return j;
+  }catch(e){ toast("request failed: " + e.message, true); return null; }
+}
+function fmtUp(s){ s = Math.max(0, s|0); const h = (s/3600)|0, m = ((s%3600)/60)|0, sec = s%60; return (h ? h + "h " : "") + (m ? m + "m " : "") + sec + "s"; }
+function ago(iso){ if(!iso) return "never"; const t = Date.parse(iso); if(isNaN(t)) return iso; const d = (Date.now() - t)/1000; return d < 90 ? "just now" : d < 5400 ? Math.round(d/60) + " min ago" : d < 172800 ? Math.round(d/3600) + " h ago" : Math.round(d/86400) + " d ago"; }
+
+// ------------------------------------------------------------- state
+function applySnap(s){
+  snap = s;
+  const busy = s.input_owned, rec = s.recording && s.recording.state !== "idle", bad = !s.invariants_ok;
+  const b = $("badge");
+  b.textContent = bad ? "SAFETY CHECK FAILED" : rec ? ("RECORDING " + (s.recording.name || "")).toUpperCase() : (s.replaying && s.replaying.name) ? ("REPLAYING " + s.replaying.name).toUpperCase() : busy ? "DESKTOP BUSY" : "READY";
+  b.className = "badge " + (bad ? "bad" : rec ? "rec" : busy ? "busy" : "");
+  $("invDot").className = "dot " + (s.invariants_ok ? "on" : "off"); $("ctlDot").className = "dot " + (s.control_ok ? "on" : "off"); $("ctlDot").title = s.control_message || "";
+  $("ver").textContent = s.version; $("up").textContent = fmtUp(s.uptime_s); $("bind").textContent = s.bind;
+  $("engineKv").innerHTML = `<span>desktop owner</span><b class="${busy ? "warn" : "ok"}">${esc(busy ? (s.input_owner && s.input_owner.what || "busy") : "free")}</b>
+    <span>recipes</span><b>${s.recipes}</b><span>background replay</span><b class="${s.background_available ? "ok" : "warn"}" title="${esc(s.background_reason)}">${s.background_available ? "available" : "off"}</b>
+    <span>desktop control</span><b class="${s.control_ok ? "ok" : "bad"}">${s.control_ok ? "ok" : "BLOCKED"}</b>`;
+  const r = s.recording || {};
+  $("recState").textContent = r.state || "idle";
+  $("recKv").innerHTML = r.state && r.state !== "idle" ? `<span>name</span><b>${esc(r.name)}</b><span>steps</span><b>${r.steps}</b><span>elapsed</span><b>${r.seconds}s</b>` +
+    (r.paused_reason ? `<span>paused</span><b class="warn">${esc(r.paused_reason)}</b>` : "") + (r.destructive_hit ? `<span>dropped</span><b class="bad">${esc(r.destructive_hit)}</b>` : "")
+    : `<span class="empty" style="grid-column:1/-1">Call record_recipe from Claude to start.</span>`;
+  $("invList").innerHTML = s.invariants_ok ? `<span class="tag ok">all protected invariants intact</span>` : `<div class="reason bad"><b>BROKEN — tools refused</b>${esc((s.invariant_problems||[]).join("\n"))}</div>`;
+  $("dataDir").textContent = s.data_dir;
+  const now = $("now");
+  if(s.replaying && s.replaying.name) now.innerHTML = `<div class="reason"><b>REPLAYING</b>${esc(s.replaying.name)} · ${s.replaying.steps} steps · ${fmtUp((Date.now()/1000) - s.replaying.since)}</div>`;
+  else if(rec) now.innerHTML = `<div class="reason" style="border-color:rgba(255,43,214,.5);color:#ffc9f1"><b style="color:var(--mg)">RECORDING</b>${esc(r.name)} — ${r.steps} steps so far</div>`;
+  else now.innerHTML = `<div class="empty">idle</div>`;
+  $("btnStop").disabled = !(s.replaying && s.replaying.name);
+}
+async function poll(){ const s = await api("/api/state"); if(s && !s.error) applySnap(s); }
+
+// ------------------------------------------------------------- recipes
+let recT = null;
+function scheduleRecipes(){ clearTimeout(recT); recT = setTimeout(loadRecipes, 800); }
+async function loadRecipes(){
+  const j = await api("/api/recipes"); if(!j || !j.recipes) return;
+  $("recN").textContent = j.recipes.length;
+  $("recipes").innerHTML = j.recipes.length ? `<table><tr><th>recipe</th><th>surface</th><th>rate</th><th>runs</th><th>avg</th><th></th></tr>` +
+    j.recipes.map(r => `<tr><td><b>${esc(r.name)}</b> <span class="tag ${r.status === "ready" ? "ok" : r.status === "expired" ? "warn" : "bad"}">${r.status}</span><div class="empty">${esc(r.description || "")} · ${r.steps} steps · last ${ago(r.last_used)}</div></td>
+      <td><span class="tag ${r.surface}">${r.surface}</span></td><td>${r.rate == null ? "–" : r.rate + "%"}</td><td>${r.success + r.fail}</td><td>${r.avg_s}s</td>
+      <td><button class="x go" data-replay="${esc(r.name)}" ${r.status === "quarantined" ? "disabled" : ""}>▶</button><button class="x" data-stats="${esc(r.name)}" title="stats + steps">i</button><button class="x stop" data-forget="${esc(r.name)}" title="delete">✕</button></td></tr>`).join("") + `</table>`
+    : `<div class="empty">no recipes yet — from Claude: record_recipe, do the task with the engine's tools, stop_recording</div>`;
+}
+async function replay(name){
+  if(!name) return;
+  $("resName").textContent = name; $("result").innerHTML = `<div class="reason"><b>RUNNING</b>${esc(name)} — hands off the mouse and keyboard.</div>`;
+  const j = await api("/api/recipes/" + encodeURIComponent(name) + "/replay", {inputs: {}});
+  if(!j) return;
+  const cls = j.status === "ok" ? "ok" : (j.status === "busy" || j.status === "refused") ? "" : "bad";
+  let html = `<div class="reason ${cls}"><b>${esc(j.status.toUpperCase())}${j.seconds ? " · " + j.seconds + "s" : ""}${j.failed_step ? " · step " + j.failed_step : ""}</b>${esc(j.failure_reason || ("done: " + (j.steps_done || 0) + " steps verified"))}</div>`;
+  if(j.read_texts && j.read_texts.length) html += `<pre class="steps">${esc(j.read_texts.join("\n\n").slice(0, 4000))}</pre>`;
+  if(j.approaches_already_tried && j.approaches_already_tried.length) html += `<div class="empty">already tried: ${esc(j.approaches_already_tried.join(" | "))}</div>`;
+  if(j.screenshot_b64) html += `<img src="data:image/jpeg;base64,${j.screenshot_b64}" style="max-width:100%;margin-top:8px;border:1px solid var(--line)">`;
+  $("result").innerHTML = html; loadRecipes(); poll();
+}
+$("recipes").addEventListener("click", async e => {
+  const b = e.target.closest("button"); if(!b) return;
+  if(b.dataset.replay) return replay(b.dataset.replay);
+  if(b.dataset.forget){ if(!confirm("Delete recipe " + b.dataset.forget + "?")) return; await api("/api/recipes/forget", {name: b.dataset.forget}); loadRecipes(); return; }
+  if(b.dataset.stats){ const j = await api("/api/recipes/" + encodeURIComponent(b.dataset.stats) + "/stats"); if(!j || j.error) return;
+    $("modalTitle").textContent = b.dataset.stats; $("modalText").textContent = j.text + "\n\n" + j.steps + "\n\nlast runs:\n" + (j.runs||[]).map(r => `${new Date(r.t*1000).toLocaleString()}  ${r.status}${r.failed_step ? " step " + r.failed_step : ""}  ${r.failure_reason || ""}`).join("\n"); $("modal").style.display = "flex"; }
+});
+$("btnReplay").onclick = () => replay($("nameIn").value.trim());
+$("nameIn").addEventListener("keydown", e => { if(e.key === "Enter") $("btnReplay").click(); });
+$("btnStop").onclick = async () => { const j = await api("/api/replay/abort", {}); toast(j && j.ok ? "abort requested" : "nothing to abort"); };
+$("modalClose").onclick = () => { $("modal").style.display = "none"; };
+$("modal").addEventListener("click", e => { if(e.target === $("modal")) $("modal").style.display = "none"; });
+document.addEventListener("keydown", e => { if(e.key === "Escape") $("modal").style.display = "none"; });
+
+async function loadJobs(){ const j = await api("/api/jobs"); if(!j) return; const jobs = j.jobs || []; $("jobN").textContent = jobs.length;
+  $("jobs").innerHTML = jobs.length ? jobs.map(x => `<div class="job"><div class="n">${esc(x.recipe)}</div><div class="h">${esc(x.cron)} · next ${esc(x.next_run || "?")}${x.last ? " · last " + esc(x.last.status) : ""}</div></div>`).join("") : `<div class="empty">no scheduled jobs</div>`; }
+
+// ------------------------------------------------------------- events + console
+function addLog(line, tag){
+  const m = line.match(/^(\[\d\d:\d\d:\d\d\] )?(\S+)\s+([\s\S]*)$/);
+  const ts = m ? (m[1] || "") : "", tg = tag || (m ? m[2] : ""), msg = m ? m[3] : line;
+  if(filterRx && !filterRx.test(line)) return;
+  const d = document.createElement("div"); d.className = "ln"; d.innerHTML = `<span class="ts">${esc(ts)}</span><span class="tg ${esc(tg)}">${esc(tg)}</span> ${esc(msg)}`;
+  const c = $("console"); c.appendChild(d); while(c.children.length > 1500) c.firstChild.remove(); if(autoscroll) c.scrollTop = c.scrollHeight;
+}
+function handle(ev){
+  if(ev.id) lastId = Math.max(lastId, ev.id);
+  if(ev.kind === "hello") applySnap(ev.snapshot);
+  else if(ev.kind === "log"){ addLog(ev.line, ev.tag); if(/^(RECIPE|REPLAY|RECORD)$/.test(ev.tag)) scheduleRecipes(); if(/^(ENGINE|INPUT|RECORD|REPLAY)$/.test(ev.tag)) poll(); }
+}
+function connect(){
+  if(es) es.close();
+  es = new EventSource("/api/events?since=" + lastId + "&t=" + encodeURIComponent(token));
+  es.onopen = () => { $("offline").style.display = "none"; };
+  es.onmessage = e => { try{ handle(JSON.parse(e.data)); }catch(err){ console.error(err); } };
+  es.onerror = () => { $("offline").style.display = "block"; };
+}
+$("filter").addEventListener("input", e => { try{ filterRx = e.target.value ? new RegExp(e.target.value, "i") : null; e.target.style.borderColor = ""; }catch{ e.target.style.borderColor = "var(--rd)"; } });
+$("autoscroll").onclick = () => { autoscroll = !autoscroll; $("autoscroll").classList.toggle("on", autoscroll); };
+$("clear").onclick = () => { $("console").innerHTML = ""; };
+
+// ------------------------------------------------------------- boot
+async function boot(){
+  if(!token) return;
+  const j = await api("/api/log?n=200"); if(j && j.lines) j.lines.forEach(l => addLog(l));
+  await poll(); loadRecipes(); loadJobs(); connect();
+  setInterval(poll, 2000); setInterval(loadJobs, 30000);
+}
+boot();
+})();
+</script>
+</body>
+</html>

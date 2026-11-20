@@ -1,0 +1,43 @@
+# virtualenv + bytecode
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# build outputs
+build/
+dist/
+*.mcpb
+*.egg-info/
+*.toc
+*.spec.bak
+
+# local-only data: the engine's real store lives in %LOCALAPPDATA%\RecipeEngine, never here
+recipes/
+token
+export.key
+*.key
+*.pem
+jobs.json
+browser-session.bin
+browser-profile/
+transcripts/
+downloads/
+engine.log
+settings.json
+.agent.lock
+@AutomationLog.txt
+
+# reports are local, except the reliability study the README links to
+reports/*
+!reports/reliability/
+reports/reliability/*
+!reports/reliability/report.md
+!reports/reliability/runs.jsonl
+
+# raw demo captures (the GIF/PNGs in docs/ are tracked)
+docs/*.mp4
+docs/*.mkv
+
+# per-machine Claude Code settings
+.claude/settings.local.json

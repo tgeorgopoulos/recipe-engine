@@ -1,0 +1,49 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: python -m pip install -e ".[bg,dev]"
+      - run: npm i -g @anthropic-ai/mcpb @anthropic-ai/claude-code
+      - name: gates
+        run: |
+          python -m recipe_engine.invariants --self-test
+          python -m pytest -q
+          claude plugin validate . --strict
+      - name: version must match the tag
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}".TrimStart("v")
+          $v = python -c "import recipe_engine; print(recipe_engine.__version__)"
+          if ($v -ne $tag) { throw "recipe_engine.__version__ is $v but the tag is $tag" }
+          $m = (Get-Content mcpb/manifest.json | ConvertFrom-Json).version
+          if ($m -ne $tag) { throw "mcpb/manifest.json version is $m but the tag is $tag" }
+      - run: powershell -ExecutionPolicy Bypass -File scripts/package.ps1
+      - run: powershell -ExecutionPolicy Bypass -File mcpb/build.ps1
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/recipe-engine-win64.zip
+            dist/recipe-engine-win64.zip.sha256
+            dist/recipe-engine.mcpb
+            dist/recipe-engine.mcpb.sha256
+          body: |
+            Recipe Engine ${{ github.ref_name }}
+
+            * `recipe-engine.mcpb` - Claude Desktop extension (Node stdio bridge to the host). Double-click to install.
+            * `recipe-engine-win64.zip` - the host (per-user, no admin). `scripts/install-host.ps1` downloads and verifies it by SHA-256 (`.sha256` files alongside).

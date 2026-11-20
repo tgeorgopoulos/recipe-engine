@@ -1,0 +1,74 @@
+{
+  "format": "recipe-engine/1",
+  "exported": "2026-09-20T00:00:00+00:00",
+  "key_id": "sample",
+  "engine_version": "0.1.0",
+  "recipe": {
+    "name": "bank-statement-csv",
+    "description": "Export last month's checking statement as CSV",
+    "surface": "browser",
+    "steps": [
+      {
+        "surface": "browser",
+        "action": "goto",
+        "selector": null,
+        "value": "https://online.examplebank.com/accounts",
+        "expect": "role=link[name='Checking']",
+        "timeout_ms": 10000
+      },
+      {
+        "surface": "browser",
+        "action": "click",
+        "selector": "role=link[name='Checking']",
+        "value": null,
+        "expect": "role=link[name='Statements']",
+        "timeout_ms": 10000
+      },
+      {
+        "surface": "browser",
+        "action": "click",
+        "selector": "role=link[name='Statements']",
+        "value": null,
+        "expect": "label=Period",
+        "timeout_ms": 10000
+      },
+      {
+        "surface": "browser",
+        "action": "select",
+        "selector": "label=Period",
+        "value": "{{period}}",
+        "expect": "role=button[name='Download CSV']",
+        "timeout_ms": 10000
+      },
+      {
+        "surface": "browser",
+        "action": "download",
+        "selector": "role=button[name='Download CSV']",
+        "value": null,
+        "expect": "url=https://online.examplebank.com/accounts",
+        "timeout_ms": 10000
+      }
+    ],
+    "params": [
+      {
+        "name": "period",
+        "example": "Last month",
+        "used_in": [
+          4
+        ]
+      }
+    ],
+    "app_hints": [
+      "Chrome"
+    ],
+    "display": null,
+    "background_capable": false,
+    "schema": 2,
+    "command_normalized": "export last month's checking statement as csv",
+    "command_variants": [],
+    "preconditions": {
+      "requires_login": true
+    }
+  },
+  "signature": ""
+}

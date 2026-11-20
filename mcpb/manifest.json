@@ -1,0 +1,80 @@
+{
+  "manifest_version": "0.3",
+  "name": "recipe-engine",
+  "display_name": "Recipe Engine",
+  "version": "0.1.0",
+  "description": "Deterministic, verified, zero-token replay of desktop and browser workflows Claude has already done once.",
+  "long_description": "Recipe Engine is a small host process on your Windows PC. Claude drives your desktop and browser through the engine's own tools while a recipe is being recorded; afterwards `replay_recipe` runs the same workflow in seconds with no model in the loop, verifying every step and refusing anything that would type a password or press Send. This extension is a thin stdio bridge to the host (http://127.0.0.1:47391/mcp); the host itself is installed once from the GitHub release.",
+  "author": {
+    "name": "Recipe Engine",
+    "url": "https://github.com/tgeorgopoulos/recipe-engine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tgeorgopoulos/recipe-engine"
+  },
+  "homepage": "https://github.com/tgeorgopoulos/recipe-engine",
+  "documentation": "https://github.com/tgeorgopoulos/recipe-engine#readme",
+  "support": "https://github.com/tgeorgopoulos/recipe-engine/issues",
+  "server": {
+    "type": "node",
+    "entry_point": "server/shim.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/shim.js"],
+      "env": {
+        "RECIPE_ENGINE_URL": "${user_config.url}",
+        "RECIPE_ENGINE_HOST_EXE": "${user_config.host_exe}"
+      }
+    }
+  },
+  "tools": [
+    { "name": "list_recipes", "description": "Every saved recipe with success rate, last run, duration and status." },
+    { "name": "record_recipe", "description": "Start recording: every engine action from now on becomes a step." },
+    { "name": "stop_recording", "description": "Stop and save the recipe (or say why it was not saved)." },
+    { "name": "replay_recipe", "description": "Run a saved recipe synchronously; returns ok | failed | quarantined | refused | busy with the failed step and reason." },
+    { "name": "recipe_stats", "description": "Plain-English run history for a recipe." },
+    { "name": "forget_recipe", "description": "Delete a recipe and its history." },
+    { "name": "schedule_recipe", "description": "Run a recipe on a cron schedule." },
+    { "name": "unschedule_recipe", "description": "Remove a schedule." },
+    { "name": "export_recipe", "description": "Signed JSON of a recipe for another machine - no cookies, no secrets." },
+    { "name": "import_recipe", "description": "Import an exported recipe; safety checks run again." },
+    { "name": "engine_status", "description": "Version, safety self-test result, whether the desktop is busy, background-replay availability." },
+    { "name": "screenshot", "description": "JPEG of the primary display." },
+    { "name": "click", "description": "Left-click at screenshot coordinates." },
+    { "name": "type", "description": "Type into the focused field (refuses passwords and password fields)." },
+    { "name": "key", "description": "Press a key or combination." },
+    { "name": "browser_goto", "description": "Navigate the engine's browser tab." },
+    { "name": "browser_snapshot", "description": "Accessibility snapshot of the current page." },
+    { "name": "browser_click", "description": "Click a page element by selector." },
+    { "name": "browser_fill", "description": "Type into a page field (refuses passwords)." },
+    { "name": "browser_read", "description": "Read text from the page." },
+    { "name": "browser_download", "description": "Click a download control and save the file (bounded, size-checked)." }
+  ],
+  "tools_generated": true,
+  "keywords": ["automation", "replay", "desktop", "browser", "windows", "ui-automation"],
+  "license": "MIT",
+  "compatibility": {
+    "claude_desktop": ">=0.10.0",
+    "platforms": ["win32"],
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  },
+  "user_config": {
+    "url": {
+      "type": "string",
+      "title": "Engine URL",
+      "description": "Where the Recipe Engine host listens. Leave the default unless you changed --bind/--port.",
+      "default": "http://127.0.0.1:47391/mcp",
+      "required": false
+    },
+    "host_exe": {
+      "type": "string",
+      "title": "Host executable",
+      "description": "Path to recipe-enginew.exe, started automatically when the host is not running. Leave empty for the default install location (%LOCALAPPDATA%\\Programs\\RecipeEngine).",
+      "default": "",
+      "required": false
+    }
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "format": "recipe-engine/1",
+  "exported": "2026-09-20T00:00:00+00:00",
+  "key_id": "sample",
+  "engine_version": "0.1.0",
+  "recipe": {
+    "name": "weekly-timesheet",
+    "description": "Fill the weekly timesheet and save it as a draft",
+    "surface": "browser",
+    "steps": [
+      {
+        "surface": "browser",
+        "action": "goto",
+        "selector": null,
+        "value": "https://time.examplecorp.com/timesheet",
+        "expect": "label=Week ending",
+        "timeout_ms": 10000
+      },
+      {
+        "surface": "browser",
+        "action": "fill",
+        "selector": "label=Week ending",
+        "value": "{{week_ending}}",
+        "expect": "label=Monday",
+        "timeout_ms": 10000
+      },
+      {
+        "surface": "browser",
+        "action": "fill",
+        "selector": "label=Monday",
+        "value": "{{mon}}",
+        "expect": "label=Tuesday",
+        "timeout_ms": 10000
+      },
+      {
+        "surface": "browser",
+        "action": "fill",
+        "selector": "label=Tuesday",
+        "value": "{{tue}}",
+        "expect": "label=Wednesday",
+        "timeout_ms": 10000
+      },
+      {
+        "surface": "browser",
+        "action": "fill",
+        "selector": "label=Wednesday",
+        "value": "{{wed}}",
+        "expect": "label=Thursday",
+        "timeout_ms": 10000
+      },
+      {
+        "surface": "browser",
+        "action": "fill",
+        "selector": "label=Thursday",
+        "value": "{{thu}}",
+        "expect": "label=Friday",
+        "timeout_ms": 10000
+      },
+      {
+        "surface": "browser",
+        "action": "fill",
+        "selector": "label=Friday",
+        "value": "{{fri}}",
+        "expect": "role=button[name='Save draft']",
+        "timeout_ms": 10000
+      },
+      {
+        "surface": "browser",
+        "action": "click",
+        "selector": "role=button[name='Save draft']",
+        "value": null,
+        "expect": "text=Draft saved",
+        "timeout_ms": 10000
+      },
+      {
+        "surface": "browser",
+        "action": "read",
+        "selector": "css=#totals",
+        "value": null,
+        "expect": "url=https://time.examplecorp.com/timesheet",
+        "timeout_ms": 10000
+      }
+    ],
+    "params": [
+      {
+        "name": "week_ending",
+        "example": "2026-09-25",
+        "used_in": [
+          2
+        ]
+      },
+      {
+        "name": "mon",
+        "example": "8",
+        "used_in": [
+          3
+        ]
+      },
+      {
+        "name": "tue",
+        "example": "8",
+        "used_in": [
+          4
+        ]
+      },
+      {
+        "name": "wed",
+        "example": "8",
+        "used_in": [
+          5
+        ]
+      },
+      {
+        "name": "thu",
+        "example": "8",
+        "used_in": [
+          6
+        ]
+      },
+      {
+        "name": "fri",
+        "example": "6",
+        "used_in": [
+          7
+        ]
+      }
+    ],
+    "app_hints": [
+      "Chrome"
+    ],
+    "display": null,
+    "background_capable": false,
+    "schema": 2,
+    "command_normalized": "fill the weekly timesheet and save it as a draft",
+    "command_variants": [],
+    "preconditions": {
+      "requires_login": true
+    }
+  },
+  "signature": ""
+}

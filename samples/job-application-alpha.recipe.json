@@ -1,0 +1,118 @@
+{
+  "format": "recipe-engine/1",
+  "exported": "2026-09-20T00:00:00+00:00",
+  "key_id": "sample",
+  "engine_version": "0.1.0",
+  "recipe": {
+    "name": "job-application-alpha",
+    "description": "Fill the job application form on jobs.alpha-example.com up to the review page",
+    "surface": "browser",
+    "steps": [
+      {
+        "surface": "browser",
+        "action": "goto",
+        "selector": null,
+        "value": "https://jobs.alpha-example.com/apply/{{job_id}}",
+        "expect": "label=Full name",
+        "timeout_ms": 10000
+      },
+      {
+        "surface": "browser",
+        "action": "fill",
+        "selector": "label=Full name",
+        "value": "{{full_name}}",
+        "expect": "label=Email",
+        "timeout_ms": 10000
+      },
+      {
+        "surface": "browser",
+        "action": "fill",
+        "selector": "label=Email",
+        "value": "{{email}}",
+        "expect": "label=Phone",
+        "timeout_ms": 10000
+      },
+      {
+        "surface": "browser",
+        "action": "fill",
+        "selector": "label=Phone",
+        "value": "{{phone}}",
+        "expect": "label=LinkedIn",
+        "timeout_ms": 10000
+      },
+      {
+        "surface": "browser",
+        "action": "fill",
+        "selector": "label=LinkedIn",
+        "value": "{{linkedin}}",
+        "expect": "role=button[name='Review application']",
+        "timeout_ms": 10000
+      },
+      {
+        "surface": "browser",
+        "action": "click",
+        "selector": "role=button[name='Review application']",
+        "value": null,
+        "expect": "text=Review",
+        "timeout_ms": 10000
+      },
+      {
+        "surface": "browser",
+        "action": "read",
+        "selector": "css=main",
+        "value": null,
+        "expect": "url=https://jobs.alpha-example.com/apply/",
+        "timeout_ms": 10000
+      }
+    ],
+    "params": [
+      {
+        "name": "job_id",
+        "example": "4821",
+        "used_in": [
+          1
+        ]
+      },
+      {
+        "name": "full_name",
+        "example": "Jordan Lee",
+        "used_in": [
+          2
+        ]
+      },
+      {
+        "name": "email",
+        "example": "jordan@example.com",
+        "used_in": [
+          3
+        ]
+      },
+      {
+        "name": "phone",
+        "example": "555 555 0100",
+        "used_in": [
+          4
+        ]
+      },
+      {
+        "name": "linkedin",
+        "example": "linkedin.com/in/jordanlee",
+        "used_in": [
+          5
+        ]
+      }
+    ],
+    "app_hints": [
+      "Chrome"
+    ],
+    "display": null,
+    "background_capable": false,
+    "schema": 2,
+    "command_normalized": "fill the job application form on jobs.alpha-example.com up to the review page",
+    "command_variants": [],
+    "preconditions": {
+      "requires_login": true
+    }
+  },
+  "signature": ""
+}

@@ -1,0 +1,80 @@
+{
+  "id": "71beae0d26a3",
+  "command_normalized": "open notepad type hello from voice agent",
+  "command_variants": [],
+  "surface": "desktop",
+  "created": "2026-09-13T18:29:21+00:00",
+  "last_success": "2026-09-13T18:44:46+00:00",
+  "last_used": "2026-09-13T18:48:27+00:00",
+  "runs": {
+    "success": 2,
+    "fail": 1
+  },
+  "avg_duration_s": 8.39,
+  "preconditions": {
+    "window": "Search"
+  },
+  "steps": [
+    {
+      "action": "key",
+      "selector": null,
+      "value": "win",
+      "expect": "title=Search",
+      "timeout_ms": 5000
+    },
+    {
+      "action": "type",
+      "selector": null,
+      "value": "Notepad",
+      "expect": "title=Search",
+      "timeout_ms": 5000
+    },
+    {
+      "action": "key",
+      "selector": null,
+      "value": "enter",
+      "expect": "title=Untitled - Notepad",
+      "timeout_ms": 5000
+    },
+    {
+      "action": "click",
+      "selector": null,
+      "value": null,
+      "expect": "title=Untitled - Notepad",
+      "timeout_ms": 5000,
+      "rel": [
+        0.1797,
+        0.4167
+      ]
+    },
+    {
+      "action": "type",
+      "selector": null,
+      "value": "hello from the voice agent",
+      "expect": "title=*hello from the voice agent - Notepad",
+      "timeout_ms": 5000
+    }
+  ],
+  "quarantined": false,
+  "consecutive_failures": 0,
+  "history": [
+    {
+      "ok": true,
+      "t": "2026-09-13T18:29:21+00:00",
+      "s": 17.6
+    },
+    {
+      "ok": true,
+      "t": "2026-09-13T18:44:46+00:00",
+      "s": 3.9
+    }
+  ],
+  "display": {
+    "w": 1920,
+    "h": 1080,
+    "scale": 1.0
+  },
+  "destructive": false,
+  "description": "Open Notepad and type \"hello from the voice agent\" into a new document.",
+  "schema": 1
+}
