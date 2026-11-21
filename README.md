@@ -152,7 +152,9 @@ From the command line: `recipe-engine recipes list | replay NAME | stats NAME`,
 | `python tests/reliability_study.py --runs 50` | record once, replay 50x, verify the app's state; exit 1 below 95 % or above a 10 s median |
 
 See [tests/README.md](tests/README.md). CI (`.github/workflows/ci.yml`, Windows
-runner) runs all tiers; a `v*` tag builds the release.
+runner) runs the unit, browser and packaging tiers on every push; the desktop tier
+runs on manual dispatch, because a hosted runner is not a faithful interactive
+desktop (the numbers above come from a real PC). A `v*` tag builds the release.
 
 ## Limitations
 
